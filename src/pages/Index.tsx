@@ -13,6 +13,7 @@ const Index = () => {
   ]);
   const [currentInput, setCurrentInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'encrypt' | 'decrypt' | null>(null);
 
   const addToHistory = (message: string) => {
     setTerminalHistory(prev => [...prev, message]);
@@ -46,11 +47,13 @@ const Index = () => {
         break;
       
       case 'encrypt':
-        addToHistory('Use the file upload area to select a text file for encryption.');
+        addToHistory('Ready to encrypt. Please select a .txt file using the file upload area.');
+        setPendingAction('encrypt');
         break;
       
       case 'decrypt':
-        addToHistory('Use the file upload area to select a .balance file for decryption.');
+        addToHistory('Ready to decrypt. Please select a .balance file using the file upload area.');
+        setPendingAction('decrypt');
         break;
       
       default:
@@ -63,7 +66,8 @@ const Index = () => {
 
   const handleFileProcess = async (file: File, action: 'encrypt' | 'decrypt') => {
     setIsProcessing(true);
-    addToHistory(`> ${action} "${file.name}"`);
+    setPendingAction(null);
+    addToHistory(`> Processing file: "${file.name}"`);
     
     try {
       if (action === 'encrypt') {
@@ -83,6 +87,7 @@ const Index = () => {
         link.click();
         
         addToHistory(`Successfully encrypted "${file.name}" to "${file.name.replace('.txt', '.balance')}"`);
+        addToHistory('File downloaded to your default download location.');
         
       } else {
         if (!file.name.endsWith('.balance')) {
@@ -101,6 +106,7 @@ const Index = () => {
         link.click();
         
         addToHistory(`Successfully decrypted "${file.name}" to "${file.name.replace('.balance', '.txt')}"`);
+        addToHistory('File downloaded to your default download location.');
       }
     } catch (error) {
       addToHistory(`Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);

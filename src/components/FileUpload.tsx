@@ -11,20 +11,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   onFileProcess,
   isProcessing
 }) => {
-  const encryptInputRef = useRef<HTMLInputElement>(null);
-  const decryptInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleEncryptClick = () => {
-    encryptInputRef.current?.click();
+  const handleFileClick = () => {
+    fileInputRef.current?.click();
   };
 
-  const handleDecryptClick = () => {
-    decryptInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, action: 'encrypt' | 'decrypt') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Determine action based on file extension
+      const action = file.name.endsWith('.balance') ? 'decrypt' : 'encrypt';
       onFileProcess(file, action);
     }
     // Reset input
@@ -40,52 +37,41 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 ╚══════════════════════════════════════╝`}
       </div>
 
-      {/* Encrypt Section */}
+      {/* File Upload Section */}
       <div className="border border-white rounded-none p-3 bg-black">
         <div className="text-white text-xs whitespace-pre mb-2">
-{`┌─ ENCRYPT ──────────────────────────┐
-│ Convert .txt files to .balance     │
+{`┌─ SELECT FILE ──────────────────────┐
+│ .txt files → encrypt to .balance   │
+│ .balance files → decrypt to .txt   │
 └────────────────────────────────────┘`}
         </div>
         <button
-          onClick={handleEncryptClick}
+          onClick={handleFileClick}
           disabled={isProcessing}
           className="w-full bg-transparent border border-white text-white px-4 py-2 hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-mono text-sm"
         >
-          <Lock className="w-4 h-4 mr-2" />
-          [SELECT .TXT FILE]
+          <Upload className="w-4 h-4 mr-2" />
+          [SELECT FILE]
         </button>
         <input
-          ref={encryptInputRef}
+          ref={fileInputRef}
           type="file"
-          accept=".txt"
-          onChange={(e) => handleFileChange(e, 'encrypt')}
+          accept=".txt,.balance"
+          onChange={handleFileChange}
           className="hidden"
         />
       </div>
 
-      {/* Decrypt Section */}
+      {/* Command Instructions */}
       <div className="border border-white rounded-none p-3 bg-black">
-        <div className="text-white text-xs whitespace-pre mb-2">
-{`┌─ DECRYPT ──────────────────────────┐
-│ Convert .balance files to .txt     │
+        <div className="text-white text-xs whitespace-pre">
+{`┌─ TERMINAL COMMANDS ────────────────┐
+│ encrypt  - Prepare to encrypt file │
+│ decrypt  - Prepare to decrypt file │
+│ help     - Show all commands       │
+│ clear    - Clear terminal history  │
 └────────────────────────────────────┘`}
         </div>
-        <button
-          onClick={handleDecryptClick}
-          disabled={isProcessing}
-          className="w-full bg-transparent border border-white text-white px-4 py-2 hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-mono text-sm"
-        >
-          <Unlock className="w-4 h-4 mr-2" />
-          [SELECT .BALANCE FILE]
-        </button>
-        <input
-          ref={decryptInputRef}
-          type="file"
-          accept=".balance"
-          onChange={(e) => handleFileChange(e, 'decrypt')}
-          className="hidden"
-        />
       </div>
 
       {/* Processing indicator with ASCII style */}
