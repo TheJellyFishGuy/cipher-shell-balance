@@ -1,18 +1,32 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { Terminal } from '@/components/Terminal';
 import { BalanceLogo } from '@/components/BalanceLogo';
+import { ChatInterface } from '@/components/ChatInterface';
 import { EncryptionService } from '@/services/EncryptionService';
+import { UserService } from '@/services/UserService';
+import { MessageService } from '@/services/MessageService';
 
 const Index = () => {
   const [terminalHistory, setTerminalHistory] = useState<string[]>([
-    'Welcome to BALANCE - Secure File Encryption Terminal',
+    'Welcome to BALANCE - Secure Terminal Network',
     'Type "help" for available commands',
     ''
   ]);
   const [currentInput, setCurrentInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [pendingAction, setPendingAction] = useState<'encrypt' | 'decrypt' | null>(null);
+  const [chatMode, setChatMode] = useState<{ active: boolean; username: string }>({ active: false, username: '' });
+  const [registrationMode, setRegistrationMode] = useState<{ active: boolean; step: 'username' | 'password'; username?: string }>({ active: false, step: 'username' });
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const currentUser = UserService.getCurrentUser();
+    if (currentUser) {
+      addFormattedToHistory(`Welcome back, ${currentUser.username}! You are logged in.`);
+    }
+  }, []);
 
   const addToHistory = (message: string) => {
     setTerminalHistory(prev => [...prev, message]);
@@ -23,9 +37,10 @@ const Index = () => {
     let formatted = message
       .replace(/\.txt/g, '<span class="text-blue-400">.txt</span>')
       .replace(/\.balance/g, '<span class="text-purple-400">.balance</span>')
-      .replace(/\b(encrypt|decrypt|help|clear|logo)\b/g, '<span class="text-purple-300">$1</span>')
+      .replace(/\b(encrypt|decrypt|help|clear|logo|chat|mail|registeruser|login|logout)\b/g, '<span class="text-purple-300">$1</span>')
       .replace(/Error:/g, '<span class="text-red-400">Error:</span>')
-      .replace(/Successfully/g, '<span class="text-green-400">Successfully</span>');
+      .replace(/Successfully/g, '<span class="text-green-400">Successfully</span>')
+      .replace(/@(\w+)/g, '<span class="text-cyan-400">@$1</span>');
     
     return formatted;
   };
@@ -36,21 +51,45 @@ const Index = () => {
 
   const processCommand = async (command: string) => {
     const cmd = command.toLowerCase().trim();
+    const args = command.trim().split(' ');
+    
     addToHistory(`> ${command}`);
     
+    // Handle registration mode
+    if (registrationMode.active) {
+      if (registrationMode.step === 'username') {
+        setRegistrationMode({ active: true, step: 'password', username: command.trim() });
+        addFormattedToHistory('Enter password:');
+        return;
+      } else if (registrationMode.step === 'password') {
+        setIsProcessing(true);
+        const result = await UserService.registerUser(registrationMode.username!, command.trim());
+        setRegistrationMode({ active: false, step: 'username' });
+        addFormattedToHistory(result.message);
+        setIsProcessing(false);
+        addToHistory('');
+        return;
+      }
+    }
+
     switch (cmd) {
       case 'help':
         addFormattedToHistory('Available commands:');
-        addFormattedToHistory('  help     - Show this help message');
-        addFormattedToHistory('  encrypt  - Encrypt a text file to .balance format');
-        addFormattedToHistory('  decrypt  - Decrypt a .balance file');
-        addFormattedToHistory('  clear    - Clear terminal history');
-        addFormattedToHistory('  logo     - Display BALANCE logo');
+        addFormattedToHistory('  help        - Show this help message');
+        addFormattedToHistory('  encrypt     - Encrypt a text file to .balance format');
+        addFormattedToHistory('  decrypt     - Decrypt a .balance file');
+        addFormattedToHistory('  registeruser - Register a new user account');
+        addFormattedToHistory('  login <username> <password> - Login to your account');
+        addFormattedToHistory('  logout      - Logout from your account');
+        addFormattedToHistory('  chat <username> - Start chat with a user');
+        addFormattedToHistory('  mail        - Check your unread messages');
+        addFormattedToHistory('  clear       - Clear terminal history');
+        addFormattedToHistory('  logo        - Display BALANCE logo');
         break;
       
       case 'clear':
         setTerminalHistory([
-          'Welcome to BALANCE - Secure File Encryption Terminal',
+          'Welcome to BALANCE - Secure Terminal Network',
           'Type "help" for available commands',
           ''
         ]);
@@ -59,6 +98,49 @@ const Index = () => {
       case 'logo':
         addToHistory('');
         addToHistory('BALANCE ASCII Logo:');
+        break;
+      
+      case 'registeruser':
+        if (UserService.getCurrentUser()) {
+          addFormattedToHistory('You are already logged in. Use "logout" first.');
+        } else {
+          setRegistrationMode({ active: true, step: 'username' });
+          addFormattedToHistory('Enter username:');
+        }
+        break;
+      
+      case 'logout':
+        if (UserService.getCurrentUser()) {
+          UserService.logout();
+          addFormattedToHistory('Logged out successfully.');
+        } else {
+          addFormattedToHistory('You are not logged in.');
+        }
+        break;
+      
+      case 'mail':
+        if (!UserService.getCurrentUser()) {
+          addFormattedToHistory('Error: You must be logged in to check mail.');
+        } else {
+          setIsProcessing(true);
+          const result = await MessageService.getUnreadMessages();
+          if (result.success) {
+            if (result.count === 0) {
+              addFormattedToHistory('No unread messages.');
+            } else {
+              addFormattedToHistory(`You have ${result.count} unread message(s):`);
+              for (const message of result.messages) {
+                const senderInfo = await UserService.findUserByUsername(''); // We'll need to get sender info
+                const timestamp = new Date(message.created_at).toLocaleString();
+                addFormattedToHistory(`[${timestamp}] From unknown: ${message.content}`);
+                await MessageService.markMessageAsRead(message.id);
+              }
+            }
+          } else {
+            addFormattedToHistory('Error: Failed to fetch messages.');
+          }
+          setIsProcessing(false);
+        }
         break;
       
       case 'encrypt':
@@ -72,8 +154,43 @@ const Index = () => {
         break;
       
       default:
-        addFormattedToHistory(`Unknown command: ${command}`);
-        addFormattedToHistory('Type "help" for available commands');
+        // Check if command starts with "login"
+        if (cmd.startsWith('login ')) {
+          const loginArgs = args.slice(1);
+          if (loginArgs.length !== 2) {
+            addFormattedToHistory('Usage: login <username> <password>');
+          } else {
+            setIsProcessing(true);
+            const result = await UserService.loginUser(loginArgs[0], loginArgs[1]);
+            addFormattedToHistory(result.message);
+            setIsProcessing(false);
+          }
+        }
+        // Check if command starts with "chat"
+        else if (cmd.startsWith('chat ')) {
+          if (!UserService.getCurrentUser()) {
+            addFormattedToHistory('Error: You must be logged in to chat.');
+          } else {
+            const username = args[1];
+            if (!username) {
+              addFormattedToHistory('Usage: chat <username>');
+            } else {
+              setIsProcessing(true);
+              const targetUser = await UserService.findUserByUsername(username);
+              if (targetUser) {
+                setChatMode({ active: true, username: username.toLowerCase() });
+                addFormattedToHistory(`Starting chat with @${username}...`);
+              } else {
+                addFormattedToHistory(`Error: User ${username} not found.`);
+              }
+              setIsProcessing(false);
+            }
+          }
+        }
+        else {
+          addFormattedToHistory(`Unknown command: ${command}`);
+          addFormattedToHistory('Type "help" for available commands');
+        }
     }
     
     addToHistory('');
@@ -131,6 +248,12 @@ const Index = () => {
     }
   };
 
+  const handleExitChat = () => {
+    setChatMode({ active: false, username: '' });
+    addFormattedToHistory('Chat session ended.');
+    addToHistory('');
+  };
+
   return (
     <div className="min-h-screen bg-black text-white font-mono overflow-hidden">
       <div className="container mx-auto p-4 max-w-6xl">
@@ -150,15 +273,24 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Terminal Section */}
+          {/* Terminal/Chat Section */}
           <div className="lg:col-span-2">
-            <Terminal
-              history={terminalHistory}
-              currentInput={currentInput}
-              onInputChange={setCurrentInput}
-              onCommand={processCommand}
-              isProcessing={isProcessing}
-            />
+            {chatMode.active ? (
+              <div className="border border-white rounded-none h-full bg-black">
+                <ChatInterface
+                  targetUsername={chatMode.username}
+                  onExit={handleExitChat}
+                />
+              </div>
+            ) : (
+              <Terminal
+                history={terminalHistory}
+                currentInput={currentInput}
+                onInputChange={setCurrentInput}
+                onCommand={processCommand}
+                isProcessing={isProcessing}
+              />
+            )}
           </div>
         </div>
       </div>

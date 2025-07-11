@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { Upload, Lock, Unlock } from 'lucide-react';
+import { Upload } from 'lucide-react';
 
 interface FileUploadProps {
   onFileProcess: (file: File, action: 'encrypt' | 'decrypt') => void;
@@ -65,7 +65,19 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       {/* Command Instructions */}
       <div className="border border-white rounded-none p-3 bg-black">
         <div className="text-white text-xs whitespace-pre">
-{`┌─ TERMINAL COMMANDS ────────────────┐
+{`┌─ USER COMMANDS ────────────────────┐
+│ `}<span className="text-purple-300">registeruser</span>{` - Create new account    │
+│ `}<span className="text-purple-300">login</span>{` <user> <pass> - Login       │
+│ `}<span className="text-purple-300">chat</span>{` <username> - Start chat      │
+│ `}<span className="text-purple-300">mail</span>{`         - Check messages     │
+└────────────────────────────────────┘`}
+        </div>
+      </div>
+
+      {/* File Commands */}
+      <div className="border border-white rounded-none p-3 bg-black">
+        <div className="text-white text-xs whitespace-pre">
+{`┌─ FILE COMMANDS ────────────────────┐
 │ `}<span className="text-purple-300">encrypt</span>{`  - Prepare to encrypt file │
 │ `}<span className="text-purple-300">decrypt</span>{`  - Prepare to decrypt file │
 │ `}<span className="text-purple-300">help</span>{`     - Show all commands       │

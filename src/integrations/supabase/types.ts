@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          user1_id: string
+          user2_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          user1_id: string
+          user2_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          user1_id?: string
+          user2_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_sessions_user1_id_fkey"
+            columns: ["user1_id"]
+            isOneToOne: false
+            referencedRelation: "terminal_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_sessions_user2_id_fkey"
+            columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "terminal_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string
+          from_user_id: string
+          id: string
+          message_type: string
+          read_at: string | null
+          to_user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          from_user_id: string
+          id?: string
+          message_type?: string
+          read_at?: string | null
+          to_user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          message_type?: string
+          read_at?: string | null
+          to_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "terminal_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "terminal_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terminal_users: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen: string | null
+          password_hash: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen?: string | null
+          password_hash: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen?: string | null
+          password_hash?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
