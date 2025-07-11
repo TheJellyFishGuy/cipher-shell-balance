@@ -41,8 +41,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div className="border border-white rounded-none p-3 bg-black">
         <div className="text-white text-xs whitespace-pre mb-2">
 {`┌─ SELECT FILE ──────────────────────┐
-│ .txt files → encrypt to .balance   │
-│ .balance files → decrypt to .txt   │
+│ `}<span className="text-blue-400">.txt</span>{` files → encrypt to `}<span className="text-purple-400">.balance</span>{`   │
+│ `}<span className="text-purple-400">.balance</span>{` files → decrypt to `}<span className="text-blue-400">.txt</span>{`   │
 └────────────────────────────────────┘`}
         </div>
         <button
@@ -66,10 +66,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div className="border border-white rounded-none p-3 bg-black">
         <div className="text-white text-xs whitespace-pre">
 {`┌─ TERMINAL COMMANDS ────────────────┐
-│ encrypt  - Prepare to encrypt file │
-│ decrypt  - Prepare to decrypt file │
-│ help     - Show all commands       │
-│ clear    - Clear terminal history  │
+│ `}<span className="text-purple-300">encrypt</span>{`  - Prepare to encrypt file │
+│ `}<span className="text-purple-300">decrypt</span>{`  - Prepare to decrypt file │
+│ `}<span className="text-purple-300">help</span>{`     - Show all commands       │
+│ `}<span className="text-purple-300">clear</span>{`    - Clear terminal history  │
 └────────────────────────────────────┘`}
         </div>
       </div>

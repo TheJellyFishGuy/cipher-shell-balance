@@ -18,18 +18,34 @@ const Index = () => {
     setTerminalHistory(prev => [...prev, message]);
   };
 
+  const formatMessage = (message: string) => {
+    // Color code file extensions and commands
+    let formatted = message
+      .replace(/\.txt/g, '<span class="text-blue-400">.txt</span>')
+      .replace(/\.balance/g, '<span class="text-purple-400">.balance</span>')
+      .replace(/\b(encrypt|decrypt|help|clear|logo)\b/g, '<span class="text-purple-300">$1</span>')
+      .replace(/Error:/g, '<span class="text-red-400">Error:</span>')
+      .replace(/Successfully/g, '<span class="text-green-400">Successfully</span>');
+    
+    return formatted;
+  };
+
+  const addFormattedToHistory = (message: string) => {
+    setTerminalHistory(prev => [...prev, formatMessage(message)]);
+  };
+
   const processCommand = async (command: string) => {
     const cmd = command.toLowerCase().trim();
     addToHistory(`> ${command}`);
     
     switch (cmd) {
       case 'help':
-        addToHistory('Available commands:');
-        addToHistory('  help     - Show this help message');
-        addToHistory('  encrypt  - Encrypt a text file to .balance format');
-        addToHistory('  decrypt  - Decrypt a .balance file');
-        addToHistory('  clear    - Clear terminal history');
-        addToHistory('  logo     - Display BALANCE logo');
+        addFormattedToHistory('Available commands:');
+        addFormattedToHistory('  help     - Show this help message');
+        addFormattedToHistory('  encrypt  - Encrypt a text file to .balance format');
+        addFormattedToHistory('  decrypt  - Decrypt a .balance file');
+        addFormattedToHistory('  clear    - Clear terminal history');
+        addFormattedToHistory('  logo     - Display BALANCE logo');
         break;
       
       case 'clear':
@@ -46,18 +62,18 @@ const Index = () => {
         break;
       
       case 'encrypt':
-        addToHistory('Ready to encrypt. Please select a .txt file using the file upload area.');
+        addFormattedToHistory('Ready to encrypt. Please select a .txt file using the file upload area.');
         setPendingAction('encrypt');
         break;
       
       case 'decrypt':
-        addToHistory('Ready to decrypt. Please select a .balance file using the file upload area.');
+        addFormattedToHistory('Ready to decrypt. Please select a .balance file using the file upload area.');
         setPendingAction('decrypt');
         break;
       
       default:
-        addToHistory(`Unknown command: ${command}`);
-        addToHistory('Type "help" for available commands');
+        addFormattedToHistory(`Unknown command: ${command}`);
+        addFormattedToHistory('Type "help" for available commands');
     }
     
     addToHistory('');
@@ -66,12 +82,12 @@ const Index = () => {
   const handleFileProcess = async (file: File, action: 'encrypt' | 'decrypt') => {
     setIsProcessing(true);
     setPendingAction(null);
-    addToHistory(`> Processing file: "${file.name}"`);
+    addFormattedToHistory(`> Processing file: "${file.name}"`);
     
     try {
       if (action === 'encrypt') {
         if (!file.name.endsWith('.txt')) {
-          addToHistory('Error: Only .txt files can be encrypted');
+          addFormattedToHistory('Error: Only .txt files can be encrypted');
           return;
         }
         
@@ -85,12 +101,12 @@ const Index = () => {
         link.download = file.name.replace('.txt', '.balance');
         link.click();
         
-        addToHistory(`Successfully encrypted "${file.name}" to "${file.name.replace('.txt', '.balance')}"`);
-        addToHistory('File downloaded to your default download location.');
+        addFormattedToHistory(`Successfully encrypted "${file.name}" to "${file.name.replace('.txt', '.balance')}"`);
+        addFormattedToHistory('File downloaded to your default download location.');
         
       } else {
         if (!file.name.endsWith('.balance')) {
-          addToHistory('Error: Only .balance files can be decrypted');
+          addFormattedToHistory('Error: Only .balance files can be decrypted');
           return;
         }
         
@@ -104,11 +120,11 @@ const Index = () => {
         link.download = file.name.replace('.balance', '.txt');
         link.click();
         
-        addToHistory(`Successfully decrypted "${file.name}" to "${file.name.replace('.balance', '.txt')}"`);
-        addToHistory('File downloaded to your default download location.');
+        addFormattedToHistory(`Successfully decrypted "${file.name}" to "${file.name.replace('.balance', '.txt')}"`);
+        addFormattedToHistory('File downloaded to your default download location.');
       }
     } catch (error) {
-      addToHistory(`Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      addFormattedToHistory(`Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
     } finally {
       setIsProcessing(false);
       addToHistory('');

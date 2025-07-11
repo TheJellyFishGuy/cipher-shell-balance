@@ -59,9 +59,11 @@ export const Terminal: React.FC<TerminalProps> = ({
         className="flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent"
       >
         {history.map((line, index) => (
-          <div key={index} className="text-white whitespace-pre-wrap leading-tight">
-            {line}
-          </div>
+          <div 
+            key={index} 
+            className="text-white whitespace-pre-wrap leading-tight"
+            dangerouslySetInnerHTML={{ __html: line }}
+          />
         ))}
         
         <form onSubmit={handleSubmit} className="flex items-center mt-2">
