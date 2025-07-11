@@ -76,7 +76,13 @@ export class MessageService {
         return { success: false, messages: [], count: 0 };
       }
 
-      return { success: true, messages: data || [], count: data?.length || 0 };
+      // Type cast the data to match our Message interface
+      const messages: Message[] = (data || []).map(msg => ({
+        ...msg,
+        message_type: msg.message_type as 'chat' | 'mail'
+      }));
+
+      return { success: true, messages, count: messages.length };
     } catch {
       return { success: false, messages: [], count: 0 };
     }
@@ -112,7 +118,13 @@ export class MessageService {
         return { success: false, messages: [] };
       }
 
-      return { success: true, messages: data || [] };
+      // Type cast the data to match our Message interface
+      const messages: Message[] = (data || []).map(msg => ({
+        ...msg,
+        message_type: msg.message_type as 'chat' | 'mail'
+      }));
+
+      return { success: true, messages };
     } catch {
       return { success: false, messages: [] };
     }
