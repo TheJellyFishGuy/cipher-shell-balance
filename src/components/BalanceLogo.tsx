@@ -12,7 +12,7 @@ export const BalanceLogo: React.FC = () => {
 ██████╔╝██║  ██║███████╗██║  ██║██║ ╚████║╚██████╗███████╗
 ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚══════╝
 `}
-      <div className="text-left mt-2 text-xs text-white opacity-80">
+      <div className="text-center mt-2 text-xs text-white opacity-80" style={{ marginLeft: '25px' }}>
         v1.3.7
       </div>
     </div>
