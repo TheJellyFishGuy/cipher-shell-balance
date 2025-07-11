@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { Terminal } from '@/components/Terminal';
@@ -123,9 +122,6 @@ const Index = () => {
           {/* Logo Section */}
           <div className="lg:col-span-1 flex flex-col">
             <div className="border border-white rounded-none p-4 mb-4 bg-black">
-              <h1 className="text-white text-xl mb-4 text-center font-bold">
-                BALANCE v1.0
-              </h1>
               <BalanceLogo />
             </div>
             
