@@ -84,6 +84,9 @@ const Index = () => {
         addFormattedToHistory('  mail        - Check your unread messages');
         addFormattedToHistory('  clear       - Clear terminal history');
         addFormattedToHistory('  logo        - Display BALANCE logo');
+        addFormattedToHistory('');
+        addFormattedToHistory('Chat commands (only available in chat mode):');
+        addFormattedToHistory('  $sendfile   - Send a .balance file to the person you\'re chatting with');
         break;
       
       case 'clear':
