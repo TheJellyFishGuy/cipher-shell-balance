@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import bcrypt from 'bcryptjs';
 
 export interface TerminalUser {
   id: string;
@@ -25,8 +24,8 @@ export class UserService {
         return { success: false, message: 'Username already exists' };
       }
 
-      // Hash password
-      const passwordHash = await bcrypt.hash(password, 10);
+      // For now, we'll store a simple hash. In production, this should be handled server-side
+      const passwordHash = await this.simpleHash(password);
 
       // Insert new user
       const { data, error } = await supabase
@@ -65,8 +64,8 @@ export class UserService {
         return { success: false, message: 'User not found' };
       }
 
-      const isValidPassword = await bcrypt.compare(password, user.password_hash);
-      if (!isValidPassword) {
+      const passwordHash = await this.simpleHash(password);
+      if (passwordHash !== user.password_hash) {
         return { success: false, message: 'Invalid password' };
       }
 
@@ -83,6 +82,15 @@ export class UserService {
     } catch (error) {
       return { success: false, message: 'Login failed: ' + (error as Error).message };
     }
+  }
+
+  // Simple hash function for demo purposes - NOT for production use
+  private static async simpleHash(input: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
   static getCurrentUser(): TerminalUser | null {
