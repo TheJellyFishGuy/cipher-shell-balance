@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { FileUpload } from '@/components/FileUpload';
 import { Terminal } from '@/components/Terminal';
@@ -155,19 +154,18 @@ const Index = () => {
       
       default:
         // Check if command starts with "login"
-        if (cmd.startsWith('login ')) {
-          const loginArgs = args.slice(1);
-          if (loginArgs.length !== 2) {
+        if (args[0] && args[0].toLowerCase() === 'login') {
+          if (args.length !== 3) {
             addFormattedToHistory('Usage: login <username> <password>');
           } else {
             setIsProcessing(true);
-            const result = await UserService.loginUser(loginArgs[0], loginArgs[1]);
+            const result = await UserService.loginUser(args[1], args[2]);
             addFormattedToHistory(result.message);
             setIsProcessing(false);
           }
         }
         // Check if command starts with "chat"
-        else if (cmd.startsWith('chat ')) {
+        else if (args[0] && args[0].toLowerCase() === 'chat') {
           if (!UserService.getCurrentUser()) {
             addFormattedToHistory('Error: You must be logged in to chat.');
           } else {
