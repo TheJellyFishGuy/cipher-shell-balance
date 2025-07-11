@@ -66,10 +66,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div className="border border-white rounded-none p-3 bg-black">
         <div className="text-white text-xs whitespace-pre">
 {`┌─ USER COMMANDS ────────────────────┐
-│ `}<span className="text-purple-300">registeruser</span>{` - Create new account    │
-│ `}<span className="text-purple-300">login</span>{` <user> <pass> - Login       │
-│ `}<span className="text-purple-300">chat</span>{` <username> - Start chat      │
-│ `}<span className="text-purple-300">mail</span>{`         - Check messages     │
+│ `}<span className="text-white">registeruser</span>{` - Create new account    │
+│ `}<span className="text-white">login</span>{` <user> <pass> - Login       │
+│ `}<span className="text-white">chat</span>{` <username> - Start chat      │
+│ `}<span className="text-white">mail</span>{`         - Check messages     │
 └────────────────────────────────────┘`}
         </div>
       </div>
@@ -78,10 +78,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       <div className="border border-white rounded-none p-3 bg-black">
         <div className="text-white text-xs whitespace-pre">
 {`┌─ FILE COMMANDS ────────────────────┐
-│ `}<span className="text-purple-300">encrypt</span>{`  - Prepare to encrypt file │
-│ `}<span className="text-purple-300">decrypt</span>{`  - Prepare to decrypt file │
-│ `}<span className="text-purple-300">help</span>{`     - Show all commands       │
-│ `}<span className="text-purple-300">clear</span>{`    - Clear terminal history  │
+│ `}<span className="text-white">encrypt</span>{`  - Prepare to encrypt file │
+│ `}<span className="text-white">decrypt</span>{`  - Prepare to decrypt file │
+│ `}<span className="text-white">help</span>{`     - Show all commands       │
+│ `}<span className="text-white">clear</span>{`    - Clear terminal history  │
 └────────────────────────────────────┘`}
         </div>
       </div>
