@@ -3,7 +3,7 @@ import React from 'react';
 
 export const BalanceLogo: React.FC = () => {
   return (
-    <div className="text-green-400 text-xs leading-none font-mono whitespace-pre">
+    <div className="text-white text-xs leading-none font-mono whitespace-pre flex justify-center">
 {`
  ██████╗  █████╗ ██╗      █████╗ ███╗   ███╗ ██████╗███████╗
  ██╔══██╗██╔══██╗██║     ██╔══██╗████╗ ████║██╔════╝██╔════╝

@@ -32,25 +32,28 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-mono">
+      {/* ASCII Header */}
+      <div className="text-white text-center text-xs whitespace-pre">
+{`╔══════════════════════════════════════╗
+║            FILE OPERATIONS           ║
+╚══════════════════════════════════════╝`}
+      </div>
+
       {/* Encrypt Section */}
-      <div className="border border-green-400/50 rounded p-3 hover:border-green-400 transition-colors">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-green-400 font-bold flex items-center">
-            <Lock className="w-4 h-4 mr-2" />
-            ENCRYPT
-          </span>
+      <div className="border border-white rounded-none p-3 bg-black">
+        <div className="text-white text-xs whitespace-pre mb-2">
+{`┌─ ENCRYPT ──────────────────────────┐
+│ Convert .txt files to .balance     │
+└────────────────────────────────────┘`}
         </div>
-        <p className="text-green-400/70 text-sm mb-3">
-          Select a .txt file to encrypt into .balance format
-        </p>
         <button
           onClick={handleEncryptClick}
           disabled={isProcessing}
-          className="w-full bg-transparent border border-green-400 text-green-400 px-4 py-2 rounded hover:bg-green-400 hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-transparent border border-white text-white px-4 py-2 hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-mono text-sm"
         >
-          <Upload className="w-4 h-4 mr-2" />
-          SELECT .TXT FILE
+          <Lock className="w-4 h-4 mr-2" />
+          [SELECT .TXT FILE]
         </button>
         <input
           ref={encryptInputRef}
@@ -62,23 +65,19 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       </div>
 
       {/* Decrypt Section */}
-      <div className="border border-green-400/50 rounded p-3 hover:border-green-400 transition-colors">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-green-400 font-bold flex items-center">
-            <Unlock className="w-4 h-4 mr-2" />
-            DECRYPT
-          </span>
+      <div className="border border-white rounded-none p-3 bg-black">
+        <div className="text-white text-xs whitespace-pre mb-2">
+{`┌─ DECRYPT ──────────────────────────┐
+│ Convert .balance files to .txt     │
+└────────────────────────────────────┘`}
         </div>
-        <p className="text-green-400/70 text-sm mb-3">
-          Select a .balance file to decrypt back to .txt
-        </p>
         <button
           onClick={handleDecryptClick}
           disabled={isProcessing}
-          className="w-full bg-transparent border border-green-400 text-green-400 px-4 py-2 rounded hover:bg-green-400 hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-transparent border border-white text-white px-4 py-2 hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-mono text-sm"
         >
-          <Upload className="w-4 h-4 mr-2" />
-          SELECT .BALANCE FILE
+          <Unlock className="w-4 h-4 mr-2" />
+          [SELECT .BALANCE FILE]
         </button>
         <input
           ref={decryptInputRef}
@@ -89,9 +88,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         />
       </div>
 
+      {/* Processing indicator with ASCII style */}
       {isProcessing && (
-        <div className="text-center text-green-400">
-          <div className="animate-pulse">Processing...</div>
+        <div className="text-center text-white">
+          <div className="text-xs whitespace-pre animate-pulse">
+{`┌─ STATUS ───────────────────────────┐
+│          PROCESSING...             │
+└────────────────────────────────────┘`}
+          </div>
         </div>
       )}
     </div>

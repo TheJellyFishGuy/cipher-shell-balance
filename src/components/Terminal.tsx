@@ -47,37 +47,37 @@ export const Terminal: React.FC<TerminalProps> = ({
 
   return (
     <div 
-      className="border border-green-400 rounded h-full bg-black/50 flex flex-col cursor-text"
+      className="border border-white rounded-none h-full bg-black flex flex-col cursor-text"
       onClick={handleClick}
     >
-      <div className="p-4 border-b border-green-400">
-        <h2 className="text-green-400 font-bold">BALANCE TERMINAL</h2>
+      <div className="p-4 border-b border-white">
+        <h2 className="text-white font-bold">BALANCE TERMINAL</h2>
       </div>
       
       <div 
         ref={terminalRef}
-        className="flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-green-400 scrollbar-track-transparent"
+        className="flex-1 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-white scrollbar-track-transparent"
       >
         {history.map((line, index) => (
-          <div key={index} className="text-green-400 whitespace-pre-wrap leading-tight">
+          <div key={index} className="text-white whitespace-pre-wrap leading-tight">
             {line}
           </div>
         ))}
         
         <form onSubmit={handleSubmit} className="flex items-center mt-2">
-          <span className="text-green-400 mr-2">balance@terminal:~$</span>
+          <span className="text-white mr-2">balance@terminal:~$</span>
           <input
             ref={inputRef}
             type="text"
             value={currentInput}
             onChange={(e) => onInputChange(e.target.value)}
-            className="bg-transparent text-green-400 outline-none flex-1 font-mono"
+            className="bg-transparent text-white outline-none flex-1 font-mono"
             disabled={isProcessing}
             autoComplete="off"
             spellCheck="false"
           />
           {isProcessing && (
-            <span className="text-green-400 animate-pulse ml-2">●</span>
+            <span className="text-white animate-pulse ml-2">●</span>
           )}
         </form>
       </div>

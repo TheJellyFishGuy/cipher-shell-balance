@@ -111,21 +111,20 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-green-400 font-mono overflow-hidden">
+    <div className="min-h-screen bg-black text-white font-mono overflow-hidden">
       <div className="container mx-auto p-4 max-w-6xl">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-screen">
           {/* Logo Section */}
           <div className="lg:col-span-1 flex flex-col">
-            <div className="border border-green-400 rounded p-4 mb-4 bg-black/50">
-              <h1 className="text-green-400 text-xl mb-4 text-center font-bold">
+            <div className="border border-white rounded-none p-4 mb-4 bg-black">
+              <h1 className="text-white text-xl mb-4 text-center font-bold">
                 BALANCE v1.0
               </h1>
               <BalanceLogo />
             </div>
             
             {/* File Operations */}
-            <div className="border border-green-400 rounded p-4 bg-black/50 flex-1">
-              <h2 className="text-green-400 mb-4 font-bold">FILE OPERATIONS</h2>
+            <div className="border border-white rounded-none p-4 bg-black flex-1">
               <FileUpload 
                 onFileProcess={handleFileProcess}
                 isProcessing={isProcessing}
