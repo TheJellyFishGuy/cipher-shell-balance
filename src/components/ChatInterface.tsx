@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageService, Message } from '@/services/MessageService';
 import { UserService } from '@/services/UserService';
+import { EncryptionService } from '@/services/EncryptionService';
 
 interface ChatInterfaceProps {
   targetUsername: string;
@@ -79,6 +80,76 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ targetUsername, on
       return;
     }
 
+    // Check for $downloadfile command
+    if (messageContent.toLowerCase().startsWith('$downloadfile ')) {
+      const filename = messageContent.substring('$downloadfile '.length).trim();
+      if (!filename) {
+        // Add a temporary message to show usage
+        setMessages(prev => [...prev, {
+          id: 'temp-' + Date.now(),
+          from_user_id: 'system',
+          to_user_id: currentUser?.id || '',
+          content: 'Usage: $downloadfile filename (without .balance extension)',
+          message_type: 'chat',
+          read_at: null,
+          created_at: new Date().toISOString()
+        } as Message]);
+        return;
+      }
+
+      // Search for the file and download it
+      const result = await MessageService.findFileInMessages(filename, targetUsername);
+      if (result.success && result.content) {
+        try {
+          // Try to decrypt the file content
+          const decryptedContent = EncryptionService.decrypt(result.content);
+          
+          // Create and download the text file
+          const blob = new Blob([decryptedContent], { type: 'text/plain' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${filename}.txt`;
+          link.click();
+          URL.revokeObjectURL(url);
+
+          // Add success message
+          setMessages(prev => [...prev, {
+            id: 'temp-' + Date.now(),
+            from_user_id: 'system',
+            to_user_id: currentUser?.id || '',
+            content: `Successfully downloaded ${filename}.balance as ${filename}.txt`,
+            message_type: 'chat',
+            read_at: null,
+            created_at: new Date().toISOString()
+          } as Message]);
+        } catch (error) {
+          // Add error message
+          setMessages(prev => [...prev, {
+            id: 'temp-' + Date.now(),
+            from_user_id: 'system',
+            to_user_id: currentUser?.id || '',
+            content: `Error: Failed to decrypt ${filename}.balance - file may be corrupted`,
+            message_type: 'chat',
+            read_at: null,
+            created_at: new Date().toISOString()
+          } as Message]);
+        }
+      } else {
+        // Add not found message
+        setMessages(prev => [...prev, {
+          id: 'temp-' + Date.now(),
+          from_user_id: 'system',
+          to_user_id: currentUser?.id || '',
+          content: result.message,
+          message_type: 'chat',
+          read_at: null,
+          created_at: new Date().toISOString()
+        } as Message]);
+      }
+      return;
+    }
+
     const result = await MessageService.sendMessage(targetUsername, messageContent, 'chat');
     if (result.success) {
       // Reload chat history to show the new message
@@ -139,8 +210,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ targetUsername, on
               <span className="text-blue-400">
                 [{formatTime(message.created_at)}]
               </span>
-              <span className={message.from_user_id === currentUser?.id ? "text-green-400 ml-2" : "text-purple-400 ml-2"}>
-                {message.from_user_id === currentUser?.id ? 'You' : `@${targetUsername}`}:
+              <span className={
+                message.from_user_id === 'system' ? "text-yellow-400 ml-2" :
+                message.from_user_id === currentUser?.id ? "text-green-400 ml-2" : "text-purple-400 ml-2"
+              }>
+                {message.from_user_id === 'system' ? 'System' :
+                 message.from_user_id === currentUser?.id ? 'You' : `@${targetUsername}`}:
               </span>
               <span className="ml-2">{formatMessage(message.content)}</span>
             </div>
@@ -157,7 +232,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ targetUsername, on
           value={currentInput}
           onChange={(e) => setCurrentInput(e.target.value)}
           className="bg-transparent text-white outline-none flex-1 font-mono"
-          placeholder="Type your message or '$sendfile' to send a .balance file... (ESC to exit)"
+          placeholder="Type your message, '$sendfile' to send a .balance file, or '$downloadfile filename' to download... (ESC to exit)"
           autoComplete="off"
           spellCheck="false"
         />

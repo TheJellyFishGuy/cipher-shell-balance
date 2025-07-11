@@ -89,6 +89,7 @@ const Index = () => {
         addFormattedToHistory('');
         addFormattedToHistory('Chat commands (only available in chat mode):');
         addFormattedToHistory('  $sendfile   - Send a .balance file to the person you\'re chatting with');
+        addFormattedToHistory('  $downloadfile <filename> - Download a .balance file as text (without .balance extension)');
         break;
       
       case 'clear':

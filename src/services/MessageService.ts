@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { UserService } from './UserService';
 
@@ -172,6 +171,50 @@ export class MessageService {
       return { success: true, sessionId: newSession.id };
     } catch {
       return { success: false };
+    }
+  }
+
+  static async findFileInMessages(filename: string, username: string): Promise<{ success: boolean; content?: string; message: string }> {
+    const currentUser = UserService.getCurrentUser();
+    if (!currentUser) {
+      return { success: false, message: 'You must be logged in to download files' };
+    }
+
+    try {
+      const targetUser = await UserService.findUserByUsername(username);
+      if (!targetUser) {
+        return { success: false, message: `User ${username} not found` };
+      }
+
+      // Search in messages between current user and target user
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .or(`and(from_user_id.eq.${currentUser.id},to_user_id.eq.${targetUser.id}),and(from_user_id.eq.${targetUser.id},to_user_id.eq.${currentUser.id})`)
+        .ilike('content', `%[FILE: ${filename}.balance]%`)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        return { success: false, message: 'Failed to search for file' };
+      }
+
+      const messages: Message[] = (data || []).map(msg => ({
+        ...msg,
+        message_type: msg.message_type as 'chat' | 'mail'
+      }));
+
+      // Find the most recent file with the exact filename
+      for (const message of messages) {
+        if (message.content.includes(`[FILE: ${filename}.balance]`)) {
+          const lines = message.content.split('\n');
+          const fileContent = lines.slice(1).join('\n'); // Skip the [FILE: filename] line
+          return { success: true, content: fileContent, message: `Found ${filename}.balance` };
+        }
+      }
+
+      return { success: false, message: `File ${filename}.balance not found in your chat history` };
+    } catch {
+      return { success: false, message: 'Failed to search for file' };
     }
   }
 }
