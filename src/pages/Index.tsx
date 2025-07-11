@@ -52,6 +52,8 @@ const Index = () => {
     const cmd = command.toLowerCase().trim();
     const args = command.trim().split(' ');
     
+    console.log('Processing command:', cmd); // Debug log
+    
     addToHistory(`> ${command}`);
     
     // Handle registration mode
@@ -103,6 +105,7 @@ const Index = () => {
         break;
       
       case 'registeruser':
+        console.log('Registeruser command detected'); // Debug log
         if (UserService.getCurrentUser()) {
           addFormattedToHistory('You are already logged in. Use "logout" first.');
         } else {
@@ -189,6 +192,7 @@ const Index = () => {
           }
         }
         else {
+          console.log('Unknown command:', command); // Debug log
           addFormattedToHistory(`Unknown command: ${command}`);
           addFormattedToHistory('Type "help" for available commands');
         }
