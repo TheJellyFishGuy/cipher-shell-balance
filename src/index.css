@@ -3,50 +3,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Modern Commercial Design System - Professional SaaS Application */
 
 @layer base {
   :root {
-    --background: 0 0% 3%;
-    --foreground: 0 0% 95%;
-
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-
-    --secondary: 0 0% 10%;
-    --secondary-foreground: 0 0% 95%;
-
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 60%;
-
-    --accent: 0 0% 25%;
-    --accent-foreground: 0 0% 95%;
-
+    /* Light theme colors */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 240 5.9% 10%;
+    
+    --muted: 210 40% 96%;
+    --muted-foreground: 240 3.8% 46.1%;
+    
+    --accent: 210 40% 96%;
+    --accent-foreground: 240 5.9% 10%;
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 262 83% 58%;
+    
+    --radius: 0.75rem;
 
-    --border: 0 0% 50%;
-    --input: 0 0% 50%;
-    --ring: 0 0% 100%;
+    /* Brand colors */
+    --brand-primary: 262 83% 58%;
+    --brand-secondary: 221 83% 53%;
+    --brand-accent: 142 76% 36%;
+    --brand-success: 142 76% 36%;
+    --brand-warning: 38 92% 50%;
+    --brand-error: 0 84% 60%;
 
-    --radius: 0.25rem;
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--brand-primary)), hsl(var(--brand-secondary)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(0 0% 98% / 0.9));
 
-    --sidebar-background: 0 0% 3%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 0% 100%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 10%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 50%;
-    --sidebar-ring: 0 0% 100%;
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
+    --shadow-brand: 0 10px 30px -10px hsl(var(--brand-primary) / 0.3);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 262 83% 58%;
+
+    --gradient-card: linear-gradient(145deg, hsl(240 10% 4% / 0.9), hsl(240 10% 6% / 0.9));
   }
 }
 
@@ -56,26 +99,21 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-mono;
-    font-family: 'Courier New', monospace;
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
   }
 
-  /* Custom scrollbar for terminal */
+  /* Modern scrollbar styling */
   .scrollbar-thin {
     scrollbar-width: thin;
-  }
-  
-  .scrollbar-thumb-white {
-    scrollbar-color: rgb(255, 255, 255) transparent;
-  }
-  
-  .scrollbar-track-transparent {
-    scrollbar-color: rgb(255, 255, 255) transparent;
+    scrollbar-color: hsl(var(--muted-foreground)) transparent;
   }
 
-  /* Webkit scrollbar styling */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
@@ -83,49 +121,115 @@ All colors MUST be HSL.
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgb(255, 255, 255);
-    border-radius: 4px;
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgb(200, 200, 200);
-  }
-
-  /* Terminal glow effect */
-  .terminal-glow {
-    text-shadow: 0 0 5px rgb(255, 255, 255);
+    background: hsl(var(--muted-foreground) / 0.5);
   }
 
   /* Selection styling */
   ::selection {
-    background: rgb(255, 255, 255);
-    color: black;
+    background: hsl(var(--primary) / 0.2);
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Typography enhancements */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  /* Modern glassmorphism effect */
+  .glass-card {
+    background: var(--gradient-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.1);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Brand gradient backgrounds */
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  /* Animation utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
   }
 }
 
-/* Animation for cursor blink */
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+/* Modern animations */
+@keyframes fadeIn {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.cursor-blink {
-  animation: blink 1s infinite;
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Matrix-style background animation */
-@keyframes matrix {
-  0% { transform: translateY(-100vh); }
-  100% { transform: translateY(100vh); }
+@keyframes scaleIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.matrix-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: -1;
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1;
+  }
+  50% { 
+    opacity: 0.5;
+  }
+}
+
+/* Component utilities */
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-[hsl(var(--brand-primary))] to-[hsl(var(--brand-secondary))] text-primary-foreground font-medium px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground border border-border hover:bg-accent font-medium px-6 py-3 rounded-lg transition-all duration-200;
+  }
+
+  .card-modern {
+    @apply bg-card border border-border rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6;
+  }
+
+  .input-modern {
+    @apply bg-background border border-input rounded-lg px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200;
+  }
 }
