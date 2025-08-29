@@ -3,93 +3,191 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Modern Commercial Design System - Professional SaaS Application */
+:root {
+  /* Dark theme only - Glass design system */
+  --background: 220 15% 8%;
+  --foreground: 0 0% 95%;
+  --card: 220 15% 12%;
+  --card-foreground: 0 0% 95%;
+  --popover: 220 15% 12%;
+  --popover-foreground: 0 0% 95%;
+  --primary: 210 100% 60%;
+  --primary-foreground: 220 15% 8%;
+  --secondary: 220 10% 18%;
+  --secondary-foreground: 0 0% 90%;
+  --muted: 220 10% 15%;
+  --muted-foreground: 220 5% 60%;
+  --accent: 210 80% 50%;
+  --accent-foreground: 220 15% 8%;
+  --destructive: 0 65% 55%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 220 15% 20%;
+  --input: 220 15% 15%;
+  --ring: 210 100% 60%;
+  --radius: 1rem;
 
-@layer base {
-  :root {
-    /* Light theme colors */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 40% 98%;
-    
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 240 5.9% 10%;
-    
-    --muted: 210 40% 96%;
-    --muted-foreground: 240 3.8% 46.1%;
-    
-    --accent: 210 40% 96%;
-    --accent-foreground: 240 5.9% 10%;
-    
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 262 83% 58%;
-    
-    --radius: 0.75rem;
+  /* Glass effect colors */
+  --glass-bg: 220 15% 12% / 0.6;
+  --glass-border: 220 15% 25% / 0.3;
+  --glass-hover: 220 15% 18% / 0.8;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(210 100% 60%) 0%, hsl(250 80% 70%) 100%);
+  --gradient-subtle: linear-gradient(135deg, hsl(220 15% 8%) 0%, hsl(220 10% 12%) 100%);
+  --gradient-glass: linear-gradient(135deg, hsl(220 15% 12% / 0.4) 0%, hsl(220 10% 18% / 0.6) 100%);
+  
+  /* Shadows */
+  --shadow-glass: 0 8px 32px 0 hsl(0 0% 0% / 0.37);
+  --shadow-glow: 0 0 40px hsl(210 100% 60% / 0.3);
+  --shadow-elegant: 0 20px 40px -10px hsl(0 0% 0% / 0.5);
+  
+  /* Animations */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --backdrop-blur: blur(16px);
+}
 
-    /* Brand colors */
-    --brand-primary: 262 83% 58%;
-    --brand-secondary: 221 83% 53%;
-    --brand-accent: 142 76% 36%;
-    --brand-success: 142 76% 36%;
-    --brand-warning: 38 92% 50%;
-    --brand-error: 0 84% 60%;
+/* Glass morphism styles */
+.glass-panel {
+  @apply bg-card/60 border border-white/10 rounded-2xl backdrop-blur-md;
+  background: hsl(var(--glass-bg));
+  border: 1px solid hsl(var(--glass-border));
+  backdrop-filter: var(--backdrop-blur);
+  box-shadow: var(--shadow-glass);
+  transition: var(--transition-smooth);
+}
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--brand-primary)), hsl(var(--brand-secondary)));
-    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(0 0% 98% / 0.9));
+.glass-panel:hover {
+  background: hsl(var(--glass-hover));
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: var(--shadow-glass), var(--shadow-glow);
+}
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
-    --shadow-brand: 0 10px 30px -10px hsl(var(--brand-primary) / 0.3);
+.glass-button {
+  @apply glass-panel px-4 py-2 text-foreground hover:text-primary cursor-pointer select-none;
+}
 
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.window-panel {
+  @apply glass-panel p-6 shadow-2xl;
+  min-height: 300px;
+  resize: both;
+  overflow: auto;
+}
+
+.tray-item {
+  @apply w-12 h-12 glass-panel flex items-center justify-center cursor-pointer transition-all duration-200;
+}
+
+.tray-item:hover {
+  @apply scale-110;
+  box-shadow: var(--shadow-glow);
+}
+
+.tray-item.active {
+  @apply bg-primary/20 border-primary/50;
+  box-shadow: var(--shadow-glow);
+}
+
+.workspace-tab {
+  @apply px-6 py-3 rounded-t-lg cursor-pointer transition-all duration-200;
+  background: hsl(var(--glass-bg));
+  border: 1px solid hsl(var(--glass-border));
+  border-bottom: none;
+}
+
+.workspace-tab.active {
+  @apply bg-primary/10 border-primary/30;
+  box-shadow: 0 0 20px hsl(var(--primary) / 0.2);
+}
+
+/* Gradients */
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.gradient-subtle {
+  background: var(--gradient-subtle);
+}
+
+.gradient-glass {
+  background: var(--gradient-glass);
+}
+
+.text-gradient {
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 40% 98%;
-    
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 262 83% 58%;
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    --gradient-card: linear-gradient(145deg, hsl(240 10% 4% / 0.9), hsl(240 10% 6% / 0.9));
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.2);
+  }
+  to {
+    box-shadow: 0 0 40px hsl(var(--primary) / 0.4), 0 0 60px hsl(var(--primary) / 0.2);
   }
 }
 
