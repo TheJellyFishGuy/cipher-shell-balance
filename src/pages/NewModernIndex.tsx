@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, MessageCircle, Image, FileText, Monitor, Calculator, Clock } from 'lucide-react';
+import { Terminal, MessageCircle, Settings, Monitor, FileImage } from 'lucide-react';
 import { WindowManager } from '@/components/WindowManager';
 import { WorkspaceManager } from '@/components/WorkspaceManager';
 import { WindowTray } from '@/components/WindowTray';
-import { ModernTerminal } from '@/components/ModernTerminal';
-import { ModernChat } from '@/components/ModernChat';
-import { ImageViewer } from '@/components/ImageViewer';
+import { NeomorphicTerminal } from '@/components/NeomorphicTerminal';
+import { NeomorphicChat } from '@/components/NeomorphicChat';
 import { SystemMonitor } from '@/components/SystemMonitor';
+import { AdministrationApp } from '@/components/AdministrationApp';
+import { BalanceImageViewer } from '@/components/BalanceImageViewer';
 import { EncryptionService } from '@/services/EncryptionService';
+import { CausalityService } from '@/services/CausalityService';
 import { UserService } from '@/services/UserService';
 import { MessageService } from '@/services/MessageService';
+import { ChatHistoryService } from '@/services/ChatHistoryService';
 import { useToast } from '@/hooks/use-toast';
 import balanceLogo from '/lovable-uploads/1c0e90a5-1bd2-4ced-ab27-2c6d470a6d6d.png';
 
@@ -47,6 +50,8 @@ const NewModernIndex = () => {
   const [currentInput, setCurrentInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [registrationMode, setRegistrationMode] = useState<{ active: boolean; step: 'username' | 'password'; username?: string }>({ active: false, step: 'username' });
+  const [devMode, setDevMode] = useState(false);
+  const [devModePasswordPrompt, setDevModePasswordPrompt] = useState(false);
 
   useEffect(() => {
     const currentUser = UserService.getCurrentUser();
@@ -62,12 +67,13 @@ const NewModernIndex = () => {
 
   const formatMessage = (message: string) => {
     return message
-      .replace(/\.txt/g, '<span class="text-blue-500 font-medium">.txt</span>')
-      .replace(/\.balance/g, '<span class="text-purple-500 font-medium">.balance</span>')
-      .replace(/\b(encrypt|decrypt|help|clear|logo|chat|mail|registeruser|login|logout)\b/g, '<span class="text-indigo-600 font-semibold">$1</span>')
-      .replace(/Error:/g, '<span class="text-red-500 font-semibold">❌ Error:</span>')
-      .replace(/Successfully/g, '<span class="text-emerald-500 font-semibold">✅ Successfully</span>')
-      .replace(/@(\w+)/g, '<span class="text-cyan-500 font-medium">@$1</span>');
+      .replace(/\.txt/g, '<span style="color: hsl(220 30% 45%); font-weight: 500;">.txt</span>')
+      .replace(/\.balance/g, '<span style="color: hsl(260 20% 50%); font-weight: 500;">.balance</span>')
+      .replace(/\.causality/g, '<span style="color: hsl(280 30% 45%); font-weight: 500;">.causality</span>')
+      .replace(/\b(encrypt|decrypt|help|clear|toggledevmode|admin|viewimage|chat|mail|registeruser|login|logout)\b/g, '<span style="color: hsl(220 30% 40%); font-weight: 600;">$1</span>')
+      .replace(/Error:/g, '<span style="color: hsl(0 65% 55%); font-weight: 600;">❌ Error:</span>')
+      .replace(/Successfully/g, '<span style="color: hsl(120 45% 45%); font-weight: 600;">✅ Successfully</span>')
+      .replace(/@(\w+)/g, '<span style="color: hsl(200 50% 45%); font-weight: 500;">@$1</span>');
   };
 
   const addFormattedToHistory = (message: string) => {
@@ -120,6 +126,27 @@ const NewModernIndex = () => {
     const args = command.trim().split(' ');
     
     addToHistory(`> ${command}`);
+
+    // Handle dev mode password prompt
+    if (devModePasswordPrompt) {
+      if (command.trim() === 'workinprogress') {
+        setDevMode(!devMode);
+        setDevModePasswordPrompt(false);
+        addFormattedToHistory(`🔧 Developer mode ${devMode ? 'disabled' : 'enabled'}`);
+        if (!devMode) {
+          addFormattedToHistory('🛠️ Administration tools are now available');
+        }
+        toast({
+          title: `Developer Mode ${devMode ? 'Disabled' : 'Enabled'}`,
+          description: devMode ? 'Back to normal mode' : 'Advanced tools unlocked',
+        });
+      } else {
+        addFormattedToHistory('❌ Incorrect password. Developer mode access denied.');
+        setDevModePasswordPrompt(false);
+      }
+      addToHistory('');
+      return;
+    }
     
     // Handle registration mode
     if (registrationMode.active) {
@@ -151,9 +178,9 @@ const NewModernIndex = () => {
         addFormattedToHistory('📋 Available Commands:');
         addFormattedToHistory('');
         addFormattedToHistory('🔐 File Operations:');
-        addFormattedToHistory('  encrypt     - Encrypt a text file to .balance format');
-        addFormattedToHistory('  decrypt     - Decrypt a .balance file');
-        addFormattedToHistory('  viewimage   - Open image viewer for balance files');
+        addFormattedToHistory('  encrypt     - Encrypt a text file to .balance/.causality format');
+        addFormattedToHistory('  decrypt     - Decrypt a .balance/.causality file');
+        addFormattedToHistory('  viewimage   - Open Balance Image Viewer');
         addFormattedToHistory('');
         addFormattedToHistory('👤 User Management:');
         addFormattedToHistory('  registeruser - Register a new user account');
@@ -166,8 +193,17 @@ const NewModernIndex = () => {
         addFormattedToHistory('');
         addFormattedToHistory('🛠️ System Tools:');
         addFormattedToHistory('  monitor     - Open system monitor');
-        addFormattedToHistory('  calc        - Open calculator');
         addFormattedToHistory('  clear       - Clear terminal history');
+        if (devMode) {
+          addFormattedToHistory('');
+          addFormattedToHistory('🔧 Developer Tools:');
+          addFormattedToHistory('  admin       - Open administration panel');
+        }
+        break;
+
+      case 'toggledevmode':
+        addFormattedToHistory('🔐 Enter developer password:');
+        setDevModePasswordPrompt(true);
         break;
 
       case 'clear':
@@ -183,28 +219,64 @@ const NewModernIndex = () => {
         addFormattedToHistory('🖥️ System Monitor opened');
         break;
 
-      case 'calc':
-        openWindow('calculator', 'Calculator', (
-          <div className="p-4">
-            <div className="text-center">
-              <Calculator className="w-12 h-12 mx-auto mb-4 text-primary" />
-              <p className="text-muted-foreground">Calculator functionality would be implemented here</p>
-            </div>
-          </div>
-        ));
-        addFormattedToHistory('🧮 Calculator opened');
+      case 'viewimage':
+        openWindow('image-viewer', 'Balance Image Viewer', <BalanceImageViewer />);
+        addFormattedToHistory('🖼️ Balance Image Viewer opened');
         break;
 
-      case 'viewimage':
-        // Simulate opening a balance image file
-        openWindow('image-viewer', 'Balance Image Viewer', (
-          <ImageViewer
-            imageSrc={balanceLogo}
-            title="Balance Logo"
-            onClose={() => closeWindow('image-viewer')}
-          />
-        ));
-        addFormattedToHistory('🖼️ Image viewer opened');
+      case 'admin':
+        if (!devMode) {
+          addFormattedToHistory('❌ Error: Administration panel requires developer mode');
+          addFormattedToHistory('💡 Use "toggledevmode" to access developer features');
+        } else {
+          openWindow('admin', 'Administration', <AdministrationApp />);
+          addFormattedToHistory('🛠️ Administration panel opened');
+        }
+        break;
+
+      case 'registeruser':
+        if (!UserService.getCurrentUser()) {
+          setRegistrationMode({ active: true, step: 'username' });
+          addFormattedToHistory('📝 User Registration');
+          addFormattedToHistory('👤 Enter username:');
+        } else {
+          addFormattedToHistory('❌ Error: You are already logged in. Logout first to register a new account.');
+        }
+        break;
+
+      case 'logout':
+        const currentUser = UserService.getCurrentUser();
+        if (currentUser) {
+          UserService.logout();
+          addFormattedToHistory(`👋 Successfully logged out from ${currentUser.username}`);
+          toast({
+            title: "Logged Out",
+            description: "You have been successfully logged out.",
+          });
+        } else {
+          addFormattedToHistory('❌ Error: You are not logged in');
+        }
+        break;
+
+      case 'mail':
+        if (!UserService.getCurrentUser()) {
+          addFormattedToHistory('❌ Error: You must be logged in to check mail');
+        } else {
+          setIsProcessing(true);
+          const result = await MessageService.getUnreadMessages();
+          if (result.success && result.count > 0) {
+            addFormattedToHistory(`📬 You have ${result.count} unread message(s):`);
+            result.messages.slice(0, 3).forEach(msg => {
+              addFormattedToHistory(`  • From: ${msg.from_user_id} - ${msg.content.substring(0, 50)}...`);
+            });
+            if (result.count > 3) {
+              addFormattedToHistory(`  ... and ${result.count - 3} more`);
+            }
+          } else {
+            addFormattedToHistory('📭 No unread messages');
+          }
+          setIsProcessing(false);
+        }
         break;
 
       default:
@@ -232,24 +304,34 @@ const NewModernIndex = () => {
           } else {
             const username = args[1];
             if (!username) {
-              addFormattedToHistory('💡 Usage: chat <username>');
+              openWindow('chat', 'Balance Chat', (
+                <NeomorphicChat onExit={() => closeWindow('chat')} />
+              ));
+              addFormattedToHistory('💬 Chat interface opened');
             } else {
               setIsProcessing(true);
               const targetUser = await UserService.findUserByUsername(username);
               if (targetUser) {
                 openWindow('chat', `Chat with @${username}`, (
-                  <ModernChat
+                  <NeomorphicChat
                     targetUsername={username.toLowerCase()}
                     onExit={() => closeWindow('chat')}
                   />
                 ));
-                addFormattedToHistory(`💬 Chat with @${username} opened in window`);
+                addFormattedToHistory(`💬 Chat with @${username} opened`);
+                // Update chat history
+                ChatHistoryService.updateChatHistory(username.toLowerCase(), `Started chat with @${username}`, true);
               } else {
                 addFormattedToHistory(`❌ Error: User ${username} not found.`);
               }
               setIsProcessing(false);
             }
           }
+        }
+        else if (args[0] && (args[0].toLowerCase() === 'encrypt' || args[0].toLowerCase() === 'decrypt')) {
+          // File operations would be handled through file upload dialogs
+          addFormattedToHistory(`💡 ${args[0].charAt(0).toUpperCase() + args[0].slice(1)} operations are available through the file upload interface`);
+          addFormattedToHistory('🔐 Supported formats: .balance (standard) and .causality (enhanced)');
         }
         else {
           addFormattedToHistory(`❌ Unknown command: ${command}`);
@@ -280,6 +362,18 @@ const NewModernIndex = () => {
       icon: Monitor,
       isActive: windows.some(w => w.id === 'monitor'),
     },
+    {
+      id: 'image-viewer',
+      name: 'Image Viewer',
+      icon: FileImage,
+      isActive: windows.some(w => w.id === 'image-viewer'),
+    },
+    ...(devMode ? [{
+      id: 'admin',
+      name: 'Administration',
+      icon: Settings,
+      isActive: windows.some(w => w.id === 'admin'),
+    }] : []),
   ];
 
   const handleTrayItemToggle = (id: string) => {
@@ -290,7 +384,7 @@ const NewModernIndex = () => {
       switch (id) {
         case 'terminal':
           openWindow('terminal', 'Terminal', (
-            <ModernTerminal
+            <NeomorphicTerminal
               history={terminalHistory}
               currentInput={currentInput}
               onInputChange={setCurrentInput}
@@ -302,67 +396,63 @@ const NewModernIndex = () => {
         case 'monitor':
           openWindow('monitor', 'System Monitor', <SystemMonitor />);
           break;
+        case 'chat':
+          openWindow('chat', 'Balance Chat', (
+            <NeomorphicChat onExit={() => closeWindow('chat')} />
+          ));
+          break;
+        case 'image-viewer':
+          openWindow('image-viewer', 'Balance Image Viewer', <BalanceImageViewer />);
+          break;
+        case 'admin':
+          if (devMode) {
+            openWindow('admin', 'Administration', <AdministrationApp />);
+          }
+          break;
       }
     }
   };
 
   const handleTrayItemClick = (id: string) => {
-    switch (id) {
-      case 'calculator':
-        openWindow('calculator', 'Calculator', (
-          <div className="p-8 text-center">
-            <Calculator className="w-16 h-16 mx-auto mb-4 text-primary" />
-            <p className="text-muted-foreground">Calculator functionality</p>
-          </div>
-        ));
-        break;
-      case 'clock':
-        openWindow('clock', 'Clock', (
-          <div className="p-8 text-center">
-            <Clock className="w-16 h-16 mx-auto mb-4 text-primary" />
-            <div className="text-2xl font-mono">
-              {new Date().toLocaleTimeString()}
-            </div>
-          </div>
-        ));
-        break;
-    }
+    // No additional quick action items in neumorphic design
+    // All functionality is accessed through the tray toggle system
   };
 
   return (
-    <div className="min-h-screen gradient-subtle relative overflow-hidden">
-      {/* Background pattern */}
-      <div 
-        className="fixed inset-0 opacity-5"
-        style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, hsl(var(--primary)) 0%, transparent 50%),
-                           radial-gradient(circle at 75% 75%, hsl(var(--accent)) 0%, transparent 50%)`
-        }}
-      />
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Neumorphic background */}
+      <div className="fixed inset-0 bg-background" />
       
       {/* Header with logo and workspace tabs */}
       <header className="relative z-40 p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-primary/20">
+            <div className="neomorphic-panel w-16 h-16 rounded-full overflow-hidden flex items-center justify-center">
               <img 
                 src={balanceLogo} 
                 alt="Balance Logo" 
-                className="w-full h-full object-cover"
+                className="w-12 h-12 object-cover rounded-full"
               />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gradient">Balance</h1>
-              <p className="text-sm text-muted-foreground">Secure File Management Platform</p>
+              <h1 className="text-3xl font-bold text-gradient">Balance</h1>
+              <p className="text-sm text-muted-foreground">
+                Secure File Management Platform {devMode && '• Developer Mode'}
+              </p>
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="glass-panel px-4 py-2">
-              <span className="text-xs text-muted-foreground">
+            <div className="neomorphic-panel px-4 py-2">
+              <span className="text-xs text-muted-foreground font-medium">
                 {new Date().toLocaleDateString()} • {new Date().toLocaleTimeString()}
               </span>
             </div>
+            {devMode && (
+              <div className="neomorphic-panel px-3 py-1 border-2 border-destructive/30">
+                <span className="text-xs font-bold text-destructive">DEV MODE</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -387,18 +477,26 @@ const NewModernIndex = () => {
       <main className="relative z-30 p-6">
         {windows.length === 0 && (
           <div className="flex items-center justify-center h-96">
-            <div className="glass-panel p-8 text-center max-w-md">
-              <Terminal className="w-16 h-16 mx-auto mb-4 text-primary animate-glow" />
-              <h2 className="text-xl font-semibold mb-2">Welcome to Balance</h2>
+            <div className="neomorphic-panel p-8 text-center max-w-lg">
+              <Terminal className="w-16 h-16 mx-auto mb-4 text-primary" />
+              <h2 className="text-2xl font-semibold mb-2">Welcome to Balance</h2>
               <p className="text-muted-foreground mb-6">
-                Click the terminal icon in the left tray to get started, or use the workspace tabs to switch between different environments.
+                Your secure file management platform with advanced encryption capabilities.
+                Click the terminal icon to get started, or use the workspace tabs to organize your work.
               </p>
               <button
                 onClick={() => handleTrayItemToggle('terminal')}
-                className="glass-button px-6 py-3 bg-primary/20 border-primary/30 text-primary font-medium"
+                className="neomorphic-button px-8 py-4 text-primary font-semibold"
               >
                 Open Terminal
               </button>
+              {devMode && (
+                <div className="mt-4 p-3 neomorphic-inset rounded-lg">
+                  <p className="text-sm text-destructive font-medium">
+                    🔧 Developer Mode Active - Advanced tools available
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
